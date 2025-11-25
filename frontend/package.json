@@ -1,0 +1,42 @@
+{
+    "name": "gvm16",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "cross-env NODE_ENV=production nuxt build",
+        "build:test": "cross-env NODE_ENV=test nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "generate:test": "cross-env CUSTOM_ENV=test nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "typecheck": "nuxi typecheck",
+        "http": "serve -l tcp://127.0.0.1:80 .output/public"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.7.2",
+        "@nuxt/types": "^2.18.1",
+        "@nuxtjs/color-mode": "^3.5.2",
+        "@nuxtjs/tailwindcss": "^6.13.2",
+        "@types/jquery": "^3.5.32",
+        "@types/underscore": "^1.13.0",
+        "font-awesome-pro": "https://github.com/oathanrex/font-awesome-pro.git",
+        "jquery": "^3.7.1",
+        "less": "^4.3.0",
+        "mitt": "^3.0.1",
+        "nuxt": "^3.16.2",
+        "underscore": "^1.13.7",
+        "vue": "^3.5.13"
+    },
+    "devDependencies": {
+        "@element-plus/nuxt": "^1.1.4",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.14.1",
+        "cross-env": "^7.0.3",
+        "element-plus": "^2.11.8",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.3.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    }
+}

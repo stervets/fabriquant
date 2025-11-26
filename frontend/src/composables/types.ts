@@ -8,7 +8,7 @@ export type ApplicationState = { // vue.reactive in application
 };
 
 export type ApplicationStore = {
-    dashboards: Record<string, Dashboard>;
+
 }
 
 export type Application = {
@@ -16,22 +16,6 @@ export type Application = {
     state: ApplicationState;
     store: ApplicationStore;
     route: (link: string) => void;
-}
-
-export type Widget = {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    id: string;
-    name: string;
-    type: string;
-    data: any
-}
-
-export type Dashboard = {
-    id: string;
-    widgets: Record<string, Widget>;
 }
 
 declare global {

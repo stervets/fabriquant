@@ -1,5 +1,41 @@
 //@import 'app/mixins';
 
-.page-index {
+@tab-height: 31px;
 
+.page-index {
+  .bots-tabs {
+    position: relative;
+    top: 1px;
+    user-select: none;
+    max-width: 70%;
+    .el-tabs__header {
+      margin: 0;
+      height: @tab-height;
+
+      .el-tabs__nav-wrap {
+        height: @tab-height;
+
+        .el-tabs__nav-scroll {
+          height: @tab-height;
+
+          .el-tabs__item {
+            height: @tab-height;
+          }
+        }
+      }
+    }
+
+    .el-tabs__nav-scroll{
+      overflow-y: hidden;
+      overflow-x: auto;
+    }
+
+    .new-bot-pane .el-tabs__nav{
+      background-color: aqua !important;
+    }
+  }
+
+  .el-button{
+    width: 24px;
+  }
 }

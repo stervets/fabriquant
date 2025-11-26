@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
-export function genId(){
-  return randomBytes(32).toString('hex');
+export function genId(size: number = 32){
+  return randomBytes(size).toString('hex');
 }
 
 export const timeout = (delay: number = 0) => {

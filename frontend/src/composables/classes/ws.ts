@@ -4,7 +4,7 @@ const WS_ADDRESS = 'ws://127.0.0.1:7015/ws';
 
 class WS {
     private ws: WebSocket;
-    private resolvers: Record<string, ()=>void> = {};
+    private resolvers: Record<string, () => void> = {};
 
     constructor(private readonly addr: string) {
         this.connect();
@@ -37,8 +37,12 @@ class WS {
                 return;
             }
 
-            if (com === '[res]'){
-                if (!this.resolvers[id])return;
+            if (com === '[res]') {
+                if (!this.resolvers[id]) return;
+                if (args && args.error) {
+                    console.warn(args.error);
+                    args = null;
+                }
                 this.resolvers[id](args);
                 delete this.resolvers[id];
                 return;
@@ -58,7 +62,7 @@ class WS {
     }
 
     request(com: string, ...args: any[]) {
-        return new Promise((resolve)=>{
+        return new Promise((resolve) => {
             const id = genId();
             this.resolvers[id] = resolve;
             this.ws.send(JSON.stringify([com, args, id]));
@@ -67,11 +71,12 @@ class WS {
 
     handlers: any = {
         async reloadPage() {
+            console.log('reload');
             await timeout(1000);
             window.location.reload();
         },
 
-        updateEnvironment(env){
+        updateEnvironment(env) {
             console.log(111, env);
         }
     }

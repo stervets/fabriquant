@@ -18,6 +18,3 @@ export const KEY_CODE = {
     ARROW_LEFT: "ArrowLeft",
     ARROW_RIGHT: "ArrowRight"
 };
-
-export const MIN_WIDGET_HEIGHT = 3;
-export const MIN_WIDGET_WIDTH = 3;

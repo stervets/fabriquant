@@ -43,7 +43,10 @@ class WS {
         const result = await this.handlers[com].apply(this, args);
         id && this.broadcast(JSON.stringify(['[res]', result, id]));
       } else {
-        console.warn(`[WS] Handler not found: "${com}"`);
+          id && this.broadcast(JSON.stringify(['[res]', {
+              error: `[WS] Backend handler not found: "${com}"`
+          }, id]));
+        console.warn(`[WS] Backend Handler not found: "${com}"`);
       }
     };
 

@@ -12,6 +12,7 @@ import type {
 } from "@/composables/types";
 import {watch} from 'vue';
 import dayjs from 'dayjs';
+import {ws} from './composables/classes/ws';
 
 export default {
     async setup() {
@@ -58,8 +59,12 @@ export default {
         watch(application.store, onApplicationStateChange, {deep: true});
         !store && onApplicationStateChange();
 
-        !application.store.dashboards && (application.store.dashboards = {});
-
+        application.state.bots = (await ws.request('getBotsList') || []);
+        console.log(111, application.store.selectedBotId);
+        (!(application.store.selectedBotId &&
+            application.state.bots.find(b=>b.id === application.store.selectedBotId)
+        )) &&
+        (application.store.selectedBotId = application.state.bots[0].id);
         return applicationVariables;
     },
 

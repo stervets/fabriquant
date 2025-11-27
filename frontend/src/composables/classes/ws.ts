@@ -74,10 +74,6 @@ class WS {
             console.log('reload');
             await timeout(1000);
             window.location.reload();
-        },
-
-        updateEnvironment(env) {
-            console.log(111, env);
         }
     }
 }

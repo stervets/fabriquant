@@ -3,7 +3,6 @@ import {ws} from '@/composables/classes/ws';
 export default {
     async setup() {
         return {
-            selectedBot: ref<string>('')
         };
     },
 

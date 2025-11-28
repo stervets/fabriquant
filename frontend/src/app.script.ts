@@ -60,7 +60,6 @@ export default {
         !store && onApplicationStateChange();
 
         application.state.bots = (await ws.request('getBotsList') || []);
-        console.log(111, application.store.selectedBotId);
         (!(application.store.selectedBotId &&
             application.state.bots.find(b=>b.id === application.store.selectedBotId)
         )) &&

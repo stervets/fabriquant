@@ -11,10 +11,20 @@ export default {
     },
 
     async mounted() {
-
+        ws.registerHandlers([
+            ['frontTest', this.frontTest]
+        ])
+        console.log(ws.handlers);
+        console.log(application.state.bots[0].id);
+        console.log(544, '>>>', await ws.requestFrom(application.state.bots[0].id, 'botTest', 12, 30));
     },
 
     methods: {
+        async frontTest(){
+            await timeout(2000);
+            return 1001;
+        },
+
         async createBot() {
             const bot = await ws.request('createBot');
             if (bot) {

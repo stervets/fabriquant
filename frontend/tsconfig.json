@@ -5,8 +5,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "strictNullChecks": false,
-    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "noEmit": true,

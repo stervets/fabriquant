@@ -1,0 +1,8 @@
+{
+  "watch": [
+    "src",
+    "../scripts"
+  ],
+  "ext": "ts,js,json",
+  "exec": "nest start"
+}

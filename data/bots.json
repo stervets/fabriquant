@@ -4,23 +4,5 @@
         "name": "DemoBot 2",
         "desc": "",
         "file": "demo/index.ts"
-    },
-    {
-        "id": "ce381e3cf0a0652637d9794ddefddae4ea08f287cddedd27",
-        "name": "DemoBot 3",
-        "desc": "",
-        "file": "demo/index.ts"
-    },
-    {
-        "id": "31777cf14a1d5cbebee1350d869d09243401d89dfaa4e5af",
-        "name": "DemoBot 4",
-        "desc": "",
-        "file": "demo/index.ts"
-    },
-    {
-        "id": "45590f1cd7f977cfdb115fdd9e2d9c2fe692d64927f1dc37",
-        "name": "DemoBot 5",
-        "desc": "",
-        "file": "demo/index.ts"
     }
 ]

@@ -1,23 +1,33 @@
 import {WebSocketServer} from 'ws';
-import {timeout} from './common/utils';
+import {genId} from "./common/utils";
+import {HOST, PORT, server} from "./main";
+
+export type ClientType = 'front' | 'bot';
 
 export interface ExtendedWebSocket extends WebSocket {
     id: string;
-    type: 'client' | 'bot'
+    type: ClientType
 }
 
 const startupTime = Date.now();
+const registerClientFunction = 'registerClient';
 
 class WS {
     private ws: WebSocketServer;
-    private sockets: Record<string, ExtendedWebSocket>;
+    private sockets: Record<string, ExtendedWebSocket> = {};
+    private requests: Record<string, (value: any) => void> = {};
 
-    init(server: any) {
+    startServer() {
+        if (!server) {
+            console.warn(`HTTP Server not initialized`);
+            return;
+        }
         this.ws = new WebSocketServer({
             server,
             path: '/ws',
         });
         this.ws.on('connection', this.onSocketConnection.bind(this));
+        console.log(`  Listen WS:   ws://${HOST}:${PORT}/ws`);
     }
 
     onSocketConnection(socket: ExtendedWebSocket) {
@@ -31,47 +41,100 @@ class WS {
 
         socket.onmessage = async (msg) => {
             let com: string;
-            let args: any[];
-            let id: string;
+            let args: any;
+            let requestId: string;
+            let receiverId: string;
+            let senderId: string;
 
             try {
-                [com, args, id] = JSON.parse(msg.data);
+                [com, args, requestId, senderId, receiverId] = JSON.parse(msg.data);
             } catch {
-                //console.warn('WS invalid JSON', msg.data);
+                console.warn('WS invalid JSON:', msg.data);
                 return;
             }
 
-            if (this.handlers[com]) {
-                const result = await this.handlers[com].apply(this, args);
-                id && socket.send(JSON.stringify(['[res]', result, id]));
+            if (receiverId) {
+                let result: any;
+                if (this.sockets[receiverId]) {
+                    result = await this.request(this.sockets[receiverId], senderId, com, ...args);
+                } else {
+                    result = this.error(`Can't find receiver socket: "${receiverId}"`);
+                    console.warn(result.error);
+                }
+                this.response(socket, result, requestId);
+                return;
+            }
+
+
+            if (com === '[res]') {
+                if (!this.requests[requestId])
+                {
+                    console.log(`11Request id not found: "${requestId}"`);
+                    console.log(JSON.parse(msg.data));
+                    return;
+                }
+                if (args && args.error) {
+                    console.warn(args.error);
+                    args = null;
+                }
+                this.requests[requestId](args);
+                delete this.requests[requestId];
+                return;
+            }
+
+            if (this.handlers[com] && (socket.id || com === registerClientFunction)) {
+                args = [...args, socket];
+                com === registerClientFunction && args.push(senderId);
+                const value = await this.handlers[com].apply(this, args);
+                requestId && this.response(socket, value, requestId);
             } else {
-                id && socket.send(JSON.stringify(['[res]', {
-                    error: `[WS] Backend handler not found: "${com}"`
-                }, id]));
-                console.warn(`[WS] Backend Handler not found: "${com}"`);
+                if (requestId) {
+                    const e = this.error(`[WS] Backend handler not found: "${com}"`);
+                    socket.send(JSON.stringify(['[res]', e, requestId]));
+                    console.warn(e.error);
+                }
             }
         };
 
         if (Date.now() - startupTime < 1000) {
-            this.send('reloadPage');
-        } else {
-
+            return this.request(socket, '', 'reloadPage');
         }
     }
 
-    private broadcast(json: string) {
-        this.ws.clients.forEach((c) => c.readyState === 1 && c.send(json));
+    registerHandlers(handlers: [string, (...args: any[]) => any][], ctx: any) {
+        handlers.forEach(([name, handler]) => this.registerHandler(name, handler, ctx));
     }
 
-    send(com: string, ...args: any[]) {
-        this.broadcast(JSON.stringify([com, args]));
+
+    registerHandler(name: string, handler: (...args: any[]) => any, ctx: any) {
+        if (this.handlers[name]) {
+            console.warn(`registerHandler(): handler ${name} registered already`);
+        }
+        this.handlers[name] = handler.bind(ctx);
+    }
+
+    error(message: string) {
+        return {error: message};
+    }
+
+    response(socket: ExtendedWebSocket, value: any, requestId: string) {
+        console.log();
+        socket.send(JSON.stringify(['[res]', value, requestId]));
+    }
+
+    request(socket: ExtendedWebSocket, senderId: string, com: string, ...args: any[]) {
+        return new Promise((requestResolve) => {
+            const requestId = genId();
+            this.requests[requestId] = requestResolve;
+            socket.send(JSON.stringify([com, [...args, senderId], requestId, '']));
+        });
     }
 
     handlers: any = {
-        async test(a: number, b: number) {
-            await timeout(500);
-            return a + b;
-        },
+        [registerClientFunction](this: WS, type: ClientType, socket: ExtendedWebSocket, senderId: string) {
+            Object.assign(socket, {id: senderId, type});
+            this.sockets[senderId] = socket;
+        }
     };
 }
 

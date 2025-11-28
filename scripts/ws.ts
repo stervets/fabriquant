@@ -1,35 +1,32 @@
-import {emit} from '../event-bus';
-
-const WS_ADDRESS = 'ws://127.0.0.1:7015/ws';
+import {genId, timeout} from "./utils";
 
 class WS {
     private ws: WebSocket;
-    private requests: Record<string, () => void> = {};
+    private requests: Record<string, (...args: any[]) => void> = {};
 
-    public readonly id: string = genId();
+    public readonly id: string = process.env.FABRIQUANT_BOT_ID!;
 
     constructor(private readonly addr: string) {
-        this.connect();
     }
 
-    private connect() {
+    async connect() {
+        let resolve: (value: unknown) => void;
         this.ws = new WebSocket(this.addr);
 
         this.ws.onopen = async () => {
-            await this.request('registerClient', 'front');
-            emit('ws:connected');
+            await this.request('registerClient', 'bot');
+            resolve(true);
         };
 
         this.ws.onclose = async () => {
             console.log('WebSocket disconnected');
-            emit('ws:disconnected');
             await timeout(1000);
             this.connect();
         };
 
         this.ws.onmessage = async (msg) => {
             let com: string;
-            let args: any[];
+            let args: any;
             let requestId: string;
             let senderId: string;
 
@@ -41,7 +38,7 @@ class WS {
             }
 
             if (com === '[res]') {
-                if (!this.requests[requestId]){
+                if (!this.requests[requestId]) {
                     console.log(`Request id not found: "${requestId}"`);
                     return;
                 }
@@ -56,11 +53,15 @@ class WS {
 
             this.response(
                 this.handlers[com] ?
-                    await this.handlers[com].apply(this, [...args, senderId]) :
+                    await this.handlers[com].apply(this, [...args]) :
                     this.error(`Handler not found: "${com}"`),
                 requestId
             );
         };
+
+        return new Promise((_resolve) => {
+            resolve = _resolve;
+        });
     }
 
     registerHandlers(handlers: [string, (...args: any[]) => any][], ctx: any) {
@@ -71,7 +72,7 @@ class WS {
         if (this.handlers[name]) {
             console.warn(`registerHandler(): handler ${name} registered already`);
         }
-        this.handlers[name] = handler;
+        this.handlers[name] = handler.bind(ctx);
     }
 
     error(message: string) {
@@ -96,11 +97,14 @@ class WS {
 
     handlers: any = {
         async reloadPage() {
-            console.log('Reloading page...');
-            await timeout(1000);
-            window.location.reload();
+        },
+
+        async botTest(a: number, b: number, senderId: string) {
+            console.log(998, 'RES FROM FRONT', await ws.requestFrom(senderId, 'frontTest'));
+            return a + b;
         }
     }
 }
 
-export const ws = new WS(WS_ADDRESS);
+//@ts-ignore
+export const ws = new WS(process.env.FABRIQUANT_WS_URL);

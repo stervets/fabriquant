@@ -16,7 +16,6 @@
           >
             <template v-for="bot in application.state.bots" :key="bot.id">
               <el-tab-pane :class="bot.type"
-                           :label="name"
                            :name="bot.id"
                            :closable="application.state.bots.length > 1"
               >
@@ -63,7 +62,7 @@
             <el-splitter-panel size="75%">
               <el-splitter class="splitter-inner">
                 <!-- Левая панель: Monaco -->
-                <el-splitter-panel size="50%" collapsible="true" min="150">
+                <el-splitter-panel size="50%" :collapsible="true" min="150">
                   <div class="panel panel--editor">
                     <!-- сюда потом воткнёшь Monaco -->
                     <div class="panel-placeholder">
@@ -85,7 +84,7 @@
             </el-splitter-panel>
 
             <!-- Нижняя зона: логи -->
-            <el-splitter-panel collapsible="true" min="150">
+            <el-splitter-panel :collapsible="true" min="150">
               <div class="panel panel--logs">
                 <!-- сюда потом воткнёшь компонент логов -->
                 <div class="panel-placeholder">

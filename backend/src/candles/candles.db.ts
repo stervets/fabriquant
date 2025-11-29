@@ -116,7 +116,7 @@ export function getAllCandles(db: CandlesDb): Candle[] {
     .all() as Candle[];
 }
 
-export function truncateCandle(db: CandlesDb) {
+export function truncateCandles(db: CandlesDb) {
   db.prepare('DELETE FROM Candle').run();
   db.prepare('VACUUM').run(); // ужимает файл
 }

@@ -99,6 +99,22 @@ class WS {
             console.log('Reloading page...');
             await timeout(1000);
             window.location.reload();
+        },
+
+        'db:update:start'(a){
+            console.log('db:update:start', a);
+        },
+
+        'db:update:donedb:update:error'(a){
+            console.log('db:update:done', a);
+        },
+
+        'db:update:error'(a){
+            console.log('db:update:error', a);
+        },
+
+        'db:update:progress'(a){
+            console.log('db:update:progress', a);
         }
     }
 }

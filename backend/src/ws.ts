@@ -130,6 +130,28 @@ class WS {
         });
     }
 
+    broadcastToType(type: string, com: string, ...args: any[]) {
+        Object.values(this.sockets).forEach((socket) => {
+            if (!type || socket.type === type) {
+                return this.request(socket, '', com, ...args);
+            }
+        });
+    }
+
+    broadcastFront(com: string, ...args: any[]) {
+        this.broadcastToType('front', com, ...args);
+    }
+
+    broadcastBots(com: string, ...args: any[]) {
+        this.broadcastToType('bot', com, ...args);
+    }
+
+    broadcast(com: string, ...args: any[]) {
+        this.broadcastToType('', com, ...args);
+    }
+
+    /* HANDLERS */
+
     handlers: any = {
         [registerClientFunction](this: WS, type: ClientType, socket: ExtendedWebSocket, senderId: string) {
             Object.assign(socket, {id: senderId, type});

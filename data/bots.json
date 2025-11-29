@@ -1,8 +1,10 @@
 [
-    {
-        "id": "4344293be1c011b5d959444f8be516ef23d2ee2e669aebfb",
-        "name": "DemoBot 2",
-        "desc": "",
-        "file": "demo/index.ts"
-    }
+  {
+    "id": "4344293be1c011b5d959444f8be516ef23d2ee2e669aebfb",
+    "name": "DemoBot 2",
+    "desc": "",
+    "file": "demo/index.ts",
+    "platform": "bybit",
+    "symbol": "BTCUSDT"
+  }
 ]
